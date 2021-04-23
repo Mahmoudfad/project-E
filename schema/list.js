@@ -4,8 +4,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var listSchema = new Schema({
- prenom: {type :String},
- nom:{type :String},
+ firstName:{type :String},
+ lastName:{type :String},
  age:{type :Number},
  email:{type :String}
 ,
