@@ -2,14 +2,13 @@ var express = require('express');
 var router = express.Router();
 const csv = require('csv-parser')
 const fs = require ('fs')
-const path = require ('path');
-const { json } = require('express');
-const { Schema } = require('mongoose');
 const translate = require('@vitalets/google-translate-api');
 var listSchema = require ('../schema/list')
 var result = []
+var tra = []
 
 router.post('/add',  (req, res , next)=>{
+  // convert to json 
 fs.createReadStream('routes/Classeur1.csv')
 .pipe(csv())
 .on('data', (data) => result.push(data))
@@ -17,15 +16,13 @@ fs.createReadStream('routes/Classeur1.csv')
   console.log(result);
 
   // transtale 
-  translate(result, {to: 'en'}).then(res => {
-    console.log(res.text);
-    console.log(res.from.language.iso);
+  translate(result, {to: 'en'}).then(tra => {
+    console.log(tra.text);  
 })
-// 
- 
+
 });
  
-result.forEach(element => {
+tra.forEach(element => {
   const list = new listSchema({
     firstName: element.prenom,
     lastName: element.nom,
