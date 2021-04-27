@@ -2,31 +2,38 @@ var express = require('express');
 var router = express.Router();
 const csv = require('csv-parser')
 const fs = require ('fs')
+const multer  = require('multer');
 const translate = require('@vitalets/google-translate-api');
 var listSchema = require ('../schema/list')
 var result = []
-var tra = []
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) { 
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now()+ '-' +  file.originalname  )
+  }
+})
 
-router.post('/add',  (req, res , next)=>{
+const upload = multer({ storage: storage })
+
+router.post('/add' ,upload.single('file'),  (req, res , next)=>{
   // convert to json 
-fs.createReadStream('routes/Classeur1.csv')
+
+fs.createReadStream(req.file.path)
 .pipe(csv())
 .on('data', (data) => result.push(data))
 .on('end', () => {
   console.log(result);
 
-  // transtale 
-  translate(result, {to: 'en'}).then(tra => {
-    console.log(tra.text);  
-})
 
 });
  
-tra.forEach(element => {
+result.forEach(element => {
   const list = new listSchema({
-    firstName: element.prenom,
-    lastName: element.nom,
-    age: element.age,
+    firstName: element.prenom || element.nome || element.الاسم,
+    lastName: element.nom || element.cognome ||element.اللقب || element.nomDeFamille ,
+    age: element.age || element.età || element.العمر  ,
     email: element.email
    })
    list.save().then(x=>{
