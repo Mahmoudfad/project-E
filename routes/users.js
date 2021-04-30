@@ -21,26 +21,37 @@ router.post('/add' ,upload.single('file'),  (req, res , next)=>{
   // convert to json 
 
 fs.createReadStream(req.file.path)
-.pipe(csv())
-.on('data', (data) => result.push(data))
+.pipe(csv({
+  mapHeaders: ({ header, index }) =>
+  translate(header, {to: 'en'}).then(res => {
+    res.text.replace(/\s/g, '')
+    console.log(res.text);
+    result.push(res.text)    
+})
+}))
+.on('data', (data) =>{})
 .on('end', () => {
   console.log(result);
+});
+setTimeout(() => {
+  result.forEach(element => {
+    const list = new listSchema({
+      firstName: element.firstname,
+      lastName: element.lastname ,
+      age: element.age   ,
+      email: element.email
+     })
+     list.save().then(x=>{
+   
+    }).catch(err=>res.send(err))
+    
+    })
+}, 1500);
 
+  res.status(201).json({
+    message: " successfully",
 
 });
- 
-result.forEach(element => {
-  const list = new listSchema({
-    firstName: element.prenom || element.nome || element.الاسم,
-    lastName: element.nom || element.cognome ||element.اللقب || element.nomDeFamille ,
-    age: element.age || element.età || element.العمر  ,
-    email: element.email
-   })
-   list.save().then(x=>{
-    res.json(x)
-  }).catch(err=>res.send(err))
-
-  })
 });
 
 
