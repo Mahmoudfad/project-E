@@ -23,30 +23,45 @@ router.post('/add' ,upload.single('file'),  (req, res , next)=>{
 fs.createReadStream(req.file.path)
 .pipe(csv({
   mapHeaders: ({ header, index }) =>
-  translate(header, {to: 'en'}).then(res => {
-    res.text.replace(/\s/g, '')
-    console.log(res.text);
-    result.push(res.text)    
+{  translate(header, {to: 'en'}).then(res => {
+  res.text.replace(/\s/g, '')
+  console.log(res.text);
+ result.push(res.text)    
 })
+}
+
 }))
-.on('data', (data) =>{})
+.on('data', (data) => {
+  console.log(data);
+  result.push(data) 
+}
+ )
 .on('end', () => {
+ 
+
   console.log(result);
 });
 setTimeout(() => {
-  result.forEach(element => {
-    const list = new listSchema({
-      firstName: element.firstname,
-      lastName: element.lastname ,
-      age: element.age   ,
-      email: element.email
-     })
-     list.save().then(x=>{
+
+  if(result.includes('age')){
+
+  }
+  console.log(result);
+  // result.forEach(element => {
+  //   console.log(element);
+  //   const list = new listSchema({
+  //     // firstName: element.firstname,
+  //     // lastName: element.lastname ,
+  //     // age: element   ,
+  //     // email: element
+  //    })
+  //    console.log(list);
+  //    list.save().then(x=>{
    
-    }).catch(err=>res.send(err))
+  //   }).catch(err=>res.send(err))
     
-    })
-}, 1500);
+  //   })
+}, 3000);
 
   res.status(201).json({
     message: " successfully",
@@ -73,3 +88,4 @@ setTimeout(() => {
 
 
 module.exports = router;
+
